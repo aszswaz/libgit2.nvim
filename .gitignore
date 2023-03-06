@@ -1,0 +1,5 @@
+/build
+*.so
+/.tags
+/compile_commands.json
+/test

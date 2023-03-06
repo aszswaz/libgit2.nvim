@@ -1,0 +1,8 @@
+#!/bin/bash
+
+command="cmake '-DCMAKE_BUILD_TYPE=Debug'"
+for iterm in $*; do
+    command="$command '$iterm'"
+done
+command="$command -S . -B build"
+eval "$command"

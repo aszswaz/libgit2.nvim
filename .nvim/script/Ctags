@@ -1,0 +1,21 @@
+#!/bin/bash
+
+[ -e tags ] && rm tags
+
+ctags \
+    -I '__THROW' \
+    '--extras=+F' \
+    '--langmap=c:+.h' \
+    '--languages=c,c++' \
+    '--links=yes' \
+    '--c-kinds=+p' \
+    '--fields=+S' \
+    -f '.tags' \
+    -R \
+    src \
+    /usr/include/stdio.h \
+    /usr/include/stdint.h \
+    /usr/include/stdlib.h \
+    /usr/include/string.h \
+    /usr/include/git2 \
+    /usr/include/luajit-2.1

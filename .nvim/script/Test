@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+PROJECT_DIR="$PWD"
+cd "$(dirname "$0")"
+
+env -C "$PROJECT_DIR" "$PWD/CmakeConfiguration"
+env -C "$PROJECT_DIR" "$PWD/CmakeBuild"
+
+env -C "$PROJECT_DIR/test" "$PROJECT_DIR/build/libgit2.nvim" "$PROJECT_DIR/src/test/main.lua" $*
