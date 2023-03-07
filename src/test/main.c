@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include <libgen.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -29,11 +32,6 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
 int main(int argc, const char *argv[]) {
     int exit_code = EXIT_SUCCESS;
 
-    if (argc < 2) {
-        fprintf(stderr, "Please specify the LUA script to be executed.\n");
-        return EXIT_FAILURE;
-    }
-
     lua_State *l = lua_newstate(l_alloc, NULL);
     if (!l) {
         fputs("The creation of Lua virtual machine failed.", stderr);
@@ -46,12 +44,17 @@ int main(int argc, const char *argv[]) {
     lua_setglobal(l, "git");
 
     // 设置 arg
-    char script[PATH_MAX] = {};
-    realpath(argv[1], script);
-    lua_createtable(l, argc, 0);
     int tbl_index = lua_gettop(l);
+    lua_createtable(l, argc, 0);
+    // 根据本文件的路径，得到 main.lua 文件的路径
+    char script[PATH_MAX] = {};
+    strcpy(script, __FILE__);
+    dirname(script);
+    strcat(script, "/main.lua");
+    // 设置到 arg 中
     lua_pushstring(l, script);
     lua_rawseti(l, tbl_index, 0);
+    // 将参数传递给脚本
     for (int i = 2; i < argc; i++) {
         lua_pushstring(l, argv[i]);
         lua_rawseti(l, tbl_index, i - 1);
