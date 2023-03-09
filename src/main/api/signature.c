@@ -17,7 +17,7 @@ static int lsignature_default(lua_State *l) {
         const git_error *err = git_error_last();
         luaL_error(l, err->message);
     } else {
-        void **udat = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_SIGNATURE);
+        void **udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_SIGNATURE);
         *udat = sign;
     }
     return 1;

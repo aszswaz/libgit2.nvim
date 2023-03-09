@@ -55,9 +55,9 @@ int main(int argc, const char *argv[]) {
     lua_pushstring(l, script);
     lua_rawseti(l, tbl_index, 0);
     // 将参数传递给脚本
-    for (int i = 2; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         lua_pushstring(l, argv[i]);
-        lua_rawseti(l, tbl_index, i - 1);
+        lua_rawseti(l, tbl_index, i);
     }
     lua_pushvalue(l, tbl_index);
     lua_setglobal(l, "arg");

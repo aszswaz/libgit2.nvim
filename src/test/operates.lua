@@ -34,18 +34,19 @@ end
 function M.remote.list(repo, verbose)
     repo = git.repository.open(repo)
     local remotes = git.remote.list(repo)
+    print("#remotes: " .. #remotes)
     if verbose then
-        for index, iterm in pairs(remotes) do
-            local remote = git.remote.lookup(repo, iterm)
+        for index = 1, #remotes do
+            local remote = git.remote.lookup(repo, remotes[index])
             local url = git.remote.url(remote)
             if not url then
                 url = git.remote.pushurl(remote)
             end
-            print(index .. ": " .. iterm .. " " .. url)
+            print(index .. ": " .. iterm[index] .. " " .. url)
         end
     else
-        for index, iterm in pairs(remotes) do
-            print(index .. ": " .. iterm)
+        for index = 1, #remotes do
+            print(index .. ": " .. remotes[index])
         end
     end
 end

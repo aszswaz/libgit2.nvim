@@ -48,7 +48,7 @@ static int lstatus_list_new(lua_State *l) {
         if (!lua_isnil(l, tbl_idx)) {
             size_t tbl_size = lua_objlen(l, tbl_idx);
             opt.pathspec.count = tbl_size;
-            size_t mem_size = tbl_size * sizeof(size_t);
+            size_t mem_size = tbl_size * sizeof(void *);
             opt.pathspec.strings = lua_newuserdata(l, mem_size);
             memset(opt.pathspec.strings, 0, mem_size);
             for (size_t i = 0; i < tbl_size; i++) {
@@ -59,7 +59,7 @@ static int lstatus_list_new(lua_State *l) {
         }
     }
 
-    git_status_list **list = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_STATUS_LIST);
+    git_status_list **list = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_STATUS_LIST);
     LUA_GIT_ERROR(l, git_status_list_new(list, repo, &opt));
     return 1;
 }

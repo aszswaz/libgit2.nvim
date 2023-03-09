@@ -7,34 +7,17 @@ TAG_FILE='.tags'
 
 [ -e "$TAG_FILE" ] && rm "$TAG_FILE"
 
-COMMAND_ARGS=(
-    -I '__THROW'
-    '--extras=+F'
-    '--langmap=c:+.h'
-    '--languages=c,c++'
-    '--links=yes'
-    '--c-kinds=+p'
-    '--fields=+S'
-    -f "$TAG_FILE"
-    -R
-    src
-)
-<<COMMAND
-    '/usr/include/luajit-2.1'
-    '/usr/include/git2'
+ctags \
+    -I '__THROW' \
+    '--extras=+F' \
+    '--langmap=c:+.h' \
+    '--languages=c,c++' \
+    '--links=yes' \
+    '--c-kinds=+p' \
+    '--fields=+S' \
+    -f "$TAG_FILE" \
+    -R \
+    src \
+    '/usr/include/luajit-2.1' \
+    '/usr/include/git2' \
     '/usr/include/git2.h'
-COMMAND
-
-# 添加 glibc 的所有头文件
-ORIGIN_IFS="$IFS"
-IFS=$'\n'
-for header in $(pacman -Ql glibc | awk '{ print $2 }' | grep ".*\.h"); do
-    COMMAND_ARGS+=("$header")
-done
-IFS="$ORIGIN_IFS"
-
-ctags="ctags"
-for iterm in ${COMMAND_ARGS[*]}; do
-    ctags+=" '$iterm'"
-done
-eval "$ctags"

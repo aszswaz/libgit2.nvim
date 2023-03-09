@@ -18,8 +18,7 @@ static int lrepository_init(lua_State *l) {
     path = luaL_checkstring(l, 1);
     is_bare = lua_toboolean(l, 2);
 
-    rep = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_REPOSITORY);
-    *rep = NULL;
+    rep = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_REPOSITORY);
     LUA_GIT_ERROR(l, git_repository_init(rep, path, is_bare));
     // 函数会返回一个 userdata，所以函数的返回值为 1
     return 1;
@@ -33,7 +32,7 @@ static int lrepository_init(lua_State *l) {
  */
 static int lrepository_open(lua_State *l) {
     const char *path = luaL_checkstring(l, 1);
-    git_repository **repo = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_REPOSITORY);
+    git_repository **repo = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_REPOSITORY);
     *repo = NULL;
     LUA_GIT_ERROR(l, git_repository_open(repo, path));
     return 1;
@@ -76,7 +75,7 @@ static int lrepository_open_ext(lua_State *l) {
         const git_error *err = git_error_last();
         luaL_error(l, err->message);
     } else {
-        git_repository **udat = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_REPOSITORY);
+        git_repository **udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_REPOSITORY);
         *udat = repo;
     }
     return 1;
@@ -110,7 +109,7 @@ static int lrepository_discover(lua_State *l) {
 static int lrepository_index(lua_State *l) {
     git_repository *repo = *(git_repository **)luaL_checkudata(l, 1, LUA_METATABLE_GIT_REPOSITORY);
 
-    git_index **index = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_INDEX);
+    git_index **index = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_INDEX);
     *index = NULL;
     LUA_GIT_ERROR(l, git_repository_index(index, repo));
     return 1;

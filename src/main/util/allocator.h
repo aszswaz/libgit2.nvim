@@ -7,6 +7,13 @@
  * 使用 lua 的内存分配器分配内存
  */
 
+#define LMALLOC(size) lmalloc(size, __FILE_NAME__, __LINE__)
+#define LCALLOC(nmemb, size) lcalloc(nmemb, size, __FILE_NAME__, __LINE__)
+#define LSTRDUP(str) lstrdup(str, __FILE_NAME__, __LINE__)
+
+/**
+ * 获取 lua_State 的内存分配器
+ */
 void set_allocator(lua_State *l);
 
 /**

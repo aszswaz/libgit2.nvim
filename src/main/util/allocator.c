@@ -30,6 +30,7 @@ void set_allocator(lua_State *l) {
         .gmallocarray = lmallocarray,
         .gfree = lfree
     };
+    // TODO: 内存分配函数还存在问题
     LUA_GIT_ERROR(l, git_libgit2_opts(GIT_OPT_SET_ALLOCATOR, &git_alloc));
 }
 

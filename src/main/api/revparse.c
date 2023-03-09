@@ -18,9 +18,9 @@ static int lrevparse_ext(lua_State *l) {
         luaL_error(l, err->message);
     } else {
         void **udat;
-        udat = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_OBJECT);
+        udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_OBJECT);
         *udat = (void *)obj;
-        udat = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_REFERENCE);
+        udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_REFERENCE);
         *udat = (void *)ref;
     }
     return 2;

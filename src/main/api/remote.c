@@ -1,4 +1,5 @@
 #include "api.h"
+#include "../util/allocator.h"
 
 /**
  * 创建远程仓库
@@ -13,7 +14,7 @@ static int lremote_create(lua_State *l) {
     const char *name = luaL_checkstring(l, 2);
     const char *url = luaL_checkstring(l, 3);
 
-    git_remote **remote = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_REMOTE);
+    git_remote **remote = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_REMOTE);
     LUA_GIT_ERROR(l, git_remote_create(remote, repo, name, url));
     return 1;
 }
@@ -25,13 +26,13 @@ static int lremote_create(lua_State *l) {
  * @return 远程仓库的列表
  */
 static int lremote_list(lua_State *l) {
-    git_strarray remotes = {0};
-
     git_repository *repo = *(git_repository **)luaL_checkudata(l, 1, LUA_METATABLE_GIT_REPOSITORY);
 
+    git_strarray remotes = {};
+    git_strarray **array = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_STRARRAY);
+    *array = LMALLOC(sizeof(git_strarray));
+    memset(*array, 0, sizeof(git_strarray));
     LUA_GIT_ERROR(l, git_remote_list(&remotes, repo));
-    git_strarray2table(l, &remotes);
-    git_strarray_dispose(&remotes);
     return 1;
 }
 
@@ -46,7 +47,7 @@ static int lremote_lookup(lua_State *l) {
     git_repository *repo = *(git_repository **)luaL_checkudata(l, 1, LUA_METATABLE_GIT_REPOSITORY);
     const char *name = luaL_checkstring(l, 2);
 
-    git_remote **remote = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_REMOTE);
+    git_remote **remote = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_REMOTE);
     *remote = NULL;
     LUA_GIT_ERROR(l, git_remote_lookup(remote, repo, name));
     return 1;
@@ -99,14 +100,15 @@ static int lremote_delete(lua_State *l) {
  * @param new_name 新的名称
  */
 static int lremote_rename(lua_State *l) {
-    git_strarray problems = {0};
 
     git_repository *repo = *(git_repository **)luaL_checkudata(l, 1, LUA_METATABLE_GIT_REPOSITORY);
     const char *name = luaL_checkstring(l, 2);
     const char *new_name = luaL_checkstring(l, 3);
-    LUA_GIT_ERROR(l, git_remote_rename(&problems, repo, name, new_name));
-    git_strarray2table(l, &problems);
-    git_strarray_dispose(&problems);
+
+    git_strarray **array = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_STRARRAY);
+    *array = LMALLOC(sizeof(git_strarray));
+    memset(*array, 0, sizeof(git_strarray));
+    LUA_GIT_ERROR(l, git_remote_rename(*array, repo, name, new_name));
     return 1;
 }
 

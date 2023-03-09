@@ -39,8 +39,8 @@ static int lcommit_create(lua_State *l) {
     // 将 parents 从 lua 数组转换为 C 数组
     luaL_checktype(l, index, LUA_TTABLE);
     parent_count = lua_objlen(l, index);
-    parents = lua_newuserdata(l, parent_count * sizeof(size_t));
-    memset(parents, 0, parent_count * sizeof(size_t));
+    parents = lua_newuserdata(l, parent_count * sizeof(void *));
+    memset(parents, 0, parent_count * sizeof(void *));
     for (int i = 0; i < parent_count; i++) {
         // 列表中的元素放到栈顶
         lua_pushinteger(l, i + 1);

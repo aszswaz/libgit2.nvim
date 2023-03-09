@@ -8,7 +8,6 @@
 
 void *new_userdata(lua_State *l, size_t sz, const char *metatable);
 
-void git_strarray2table(lua_State *l, git_strarray *array);
 git_strarray *table2git_strarray(lua_State *l, int tbl_index);
 git_strarray *str2git_strarray(lua_State *l, int index);
 
