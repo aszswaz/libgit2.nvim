@@ -2,6 +2,7 @@
 #include "git2.h"
 
 #include "../logger.h"
+#include "../util/allocator.h"
 
 static int lm_gc_repository(lua_State *l) {
     git_repository *rep = *(git_repository **)lua_touserdata(l, 1);
@@ -72,6 +73,6 @@ static int lm_gc_strarray(lua_State *l) {
     git_strarray *array = *(git_strarray **)lua_touserdata(l, 1);
     LUA_LOGGER(l, "%s: %p", __func__, array);
     git_strarray_dispose(array);
-    free(array);
+    lfree(array);
     return 0;
 }

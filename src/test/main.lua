@@ -7,10 +7,13 @@ if not git then
     git = require "libgit2"
 end
 
-local operate = require "operates"
 local mInfo = require "info"
 local mOption = require "option"
 local mStatus = require "status"
+local mRemote = require "remote"
+local mRepoistory = require "repoistory"
+local mIndex = require "index"
+local mCommit = require "commit"
 
 local argparse = require "argparse"
 local lfs = require "lfs"
@@ -60,21 +63,21 @@ elseif args.option then
         mOption.set()
     end
 elseif args.init then
-    operate.init(repo, args.bare)
+    mRepoistory.init(repo, args.bare)
 elseif args.status then
     mStatus.view(repo)
 elseif args.add then
-    operate.add(repo, args.file)
+    mIndex.add(repo, args.file)
 elseif args.commit then
-    operate.commit(repo, args.message)
+    mCommit.commit(repo, args.message)
 elseif args.remote then
     if args.create then
-        operate.remote.create(repo, args.name, args.url)
+        mRemote.create(repo, args.name, args.url)
     end
     if args.list then
-        operate.remote.list(repo, args.verbose)
+        mRemote.list(repo, args.verbose)
     end
 elseif args.push then
-    operate.remote.push(repo)
+    mRemote.push(repo)
 end
 git.shutdown()

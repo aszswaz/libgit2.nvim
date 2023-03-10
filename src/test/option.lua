@@ -15,8 +15,9 @@ function M.show()
     print("windows_sharemode:", git.get_option "windows_sharemode")
     print("pack_max_objects:", git.get_option "pack_max_objects")
     print("mwindow_file_limit:", git.get_option "mwindow_file_limit")
-    for index, iterm in pairs(git.get_option "extensions") do
-        print("extensions:", iterm, ";index:", index)
+    local extensions = git.get_option "extensions"
+    for index = 1, #extensions do
+        print("extensions:", extensions[index], ";index:", index)
     end
     print("owner_validation:", git.get_option "owner_validation")
 end

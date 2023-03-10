@@ -152,12 +152,10 @@ int llibgit2_get_option(lua_State *l) {
     } else if (opt_equal("mwindow_file_limit")) {
         get_int_opt(MWINDOW_FILE_LIMIT);
     } else if (opt_equal("extensions")) {
-        git_strarray strs = {NULL, 0};
-        if (git_libgit2_opts(GIT_OPT_GET_EXTENSIONS, &strs)) {
-            lua_pushnil(l);
-        } else {
-            git_strarray_dispose(&strs);
-        }
+        git_strarray **strs = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_STRARRAY);
+        *strs = LMALLOC(sizeof(git_strarray));
+        memset(*strs, 0, sizeof(git_strarray));
+        if (git_libgit2_opts(GIT_OPT_GET_EXTENSIONS, *strs)) lua_pushnil(l);
     } else if (opt_equal("owner_validation")) {
         get_int_opt(OWNER_VALIDATION);
     } else {

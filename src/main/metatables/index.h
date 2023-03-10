@@ -95,7 +95,7 @@ static int lm_index_status_entry(lua_State *l) {
  * 访问 git_strarray
  */
 static int lm_index_strarray(lua_State *l) {
-    git_strarray *array = lua_touserdata(l, 1);
+    git_strarray *array = *(git_strarray **)lua_touserdata(l, 1);
     size_t index = luaL_checkint(l, 2);
     if (index >= 1 && index <= array->count) {
         lua_pushstring(l, array->strings[index - 1]);

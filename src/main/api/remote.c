@@ -1,5 +1,6 @@
 #include "api.h"
 #include "../util/allocator.h"
+#include "../logger.h"
 
 /**
  * 创建远程仓库
@@ -28,11 +29,10 @@ static int lremote_create(lua_State *l) {
 static int lremote_list(lua_State *l) {
     git_repository *repo = *(git_repository **)luaL_checkudata(l, 1, LUA_METATABLE_GIT_REPOSITORY);
 
-    git_strarray remotes = {};
     git_strarray **array = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_STRARRAY);
     *array = LMALLOC(sizeof(git_strarray));
     memset(*array, 0, sizeof(git_strarray));
-    LUA_GIT_ERROR(l, git_remote_list(&remotes, repo));
+    LUA_GIT_ERROR(l, git_remote_list(*array, repo));
     return 1;
 }
 
