@@ -30,31 +30,29 @@ void set_allocator(lua_State *l) {
         .gmallocarray = lmallocarray,
         .gfree = lfree
     };
-    // TODO: 内存分配函数还存在问题
     LUA_GIT_ERROR(l, git_libgit2_opts(GIT_OPT_SET_ALLOCATOR, &git_alloc));
 }
 
-void *lmalloc(size_t size, const char *file, int line) {
-    if (!size) return NULL;
-    void *pointer = lalloc(lalloc_data, NULL, 0, size);
+void *lmalloc(size_t n, const char *file, int line) {
+    if (!n) return NULL;
+    void *pointer = lalloc(lalloc_data, NULL, 0, n);
     LOGGER(pointer);
     if (!pointer) git_error_set_oom();
     return pointer;
 }
 
-void *lcalloc(size_t nmemb, size_t size, const char *file, int line) {
-    if (!nmemb || !size) return 0;
-    size_t mem_size = nmemb * size;
-    void *pointer = lalloc(lalloc_data, NULL, 0, mem_size);
+void *lcalloc(size_t nmemb, size_t n, const char *file, int line) {
+    if (!nmemb || !n) return 0;
+    size_t mem_size = nmemb * n;
+    void *pointer = lmalloc(mem_size, file, line);
     LOGGER(pointer);
-    if (!pointer) git_error_set_oom();
-    memset(pointer, 0, mem_size);
+    if (pointer) memset(pointer, 0, mem_size);
     return pointer;
 }
 
-void *lrealloc(void *ptr, size_t size, const char *file, int line) {
-    if (!size) return NULL;
-    void *pointer = lalloc(lalloc_data, ptr, 0, size);
+void *lrealloc(void *ptr, size_t n, const char *file, int line) {
+    if (!n) return NULL;
+    void *pointer = lalloc(lalloc_data, ptr, 0, n);
     LOGGER(pointer);
     if (!pointer) git_error_set_oom();
     return pointer;
@@ -62,7 +60,8 @@ void *lrealloc(void *ptr, size_t size, const char *file, int line) {
 
 char *lstrdup(const char *str, const char *file, int line) {
     if (!str) return NULL;
-    char *pointer = lalloc(lalloc_data, NULL, 0, strlen(str) + 1);
+
+    char *pointer = lmalloc(strlen(str) + 1, file, line);
     LOGGER(pointer);
     if (!pointer)
         git_error_set_oom();
@@ -73,19 +72,21 @@ char *lstrdup(const char *str, const char *file, int line) {
 
 char *lstrndup(const char *str, size_t n, const char *file, int line) {
     if (!str || !n) return NULL;
-    char *pointer = lalloc(lalloc_data, NULL, 0, n + 1);
+    size_t len = strnlen(str, n);
+    char *pointer = lalloc(lalloc_data, NULL, 0, len + 1);
     LOGGER(pointer);
-    if (!pointer)
+    if (!pointer) {
         git_error_set_oom();
-    else
-        strncpy(pointer, str, n);
+    } else {
+        memcpy(pointer, str, n);
+        pointer[len] = 0;
+    }
     return pointer;
 }
 
 char *lsubstrdup(const char *str, size_t n, const char *file, int line) {
     if (!str || !n) return NULL;
-    char *pointer = lalloc(lalloc_data, NULL, 0, n + 1);
-    LOGGER(pointer);
+    char *pointer = lmalloc(n + 1, file, line);
     if (!pointer) {
         git_error_set_oom();
     } else {
@@ -96,17 +97,14 @@ char *lsubstrdup(const char *str, size_t n, const char *file, int line) {
 }
 
 void *lreallocarray(void *ptr, size_t nelem, size_t elsize, const char *file, int line) {
-    if (!nelem || !elsize) return NULL;
-    void *pointer = lalloc(lalloc_data, ptr, 0, nelem * elsize);
-    LOGGER(pointer);
+    void *pointer = lrealloc(ptr, nelem * elsize, file, line);
     if (!pointer) git_error_set_oom();
     return pointer;
 }
 
 void *lmallocarray(size_t nelem, size_t elsize, const char *file, int line) {
     if (!nelem || !elsize) return NULL;
-    void *pointer = lalloc(lalloc_data, NULL, 0, nelem * elsize);
-    LOGGER(pointer);
+    void *pointer = lmalloc(nelem * elsize, file, line);
     if (!pointer) git_error_set_oom();
     return pointer;
 }
