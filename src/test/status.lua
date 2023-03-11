@@ -1,5 +1,16 @@
 local M = {}
 
+function M.regCmd(parser)
+    local cmd = parser:command("status", "获取存储库的文件状态信息")
+end
+
+function M.run(args)
+    if not args.status then
+        return
+    end
+    M.view(args.repo)
+end
+
 -- 查看文件状态
 function M.view(repo)
     repo = git.repository.open(repo)
@@ -14,18 +25,6 @@ function M.view(repo)
     local statusList = git.status.list_new(repo, {
         version = git.enum.STATUS_OPTIONS_VERSION,
         show = git.enum.STATUS_SHOW_INDEX_AND_WORKDIR,
-        flags = {
-            include_untracked = true,
-            renames_head_to_index = true,
-            sort_case_sensitively = true,
-        },
-        --[[
-        pathspec = {
-            "/dev/shm/demo",
-        },
-        --]]
-        baseline = treeHandle,
-        rename_threshold = 50,
     })
     -- 打印所有文件状态
     print("status list size:", #statusList)

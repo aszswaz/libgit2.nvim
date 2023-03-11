@@ -19,8 +19,7 @@ git_strarray *table2git_strarray(lua_State *l, int tbl_index) {
     // 申请 string 数组的内存，并初始化内存
     array->strings = LCALLOC(tbl_len, sizeof(void *));
     for (int i = 0; i < tbl_len; i++) {
-        lua_pushinteger(l, i + 1);
-        lua_gettable(l, tbl_index);
+        getbyindex(l, tbl_index, i);
         array->strings[i] = LSTRDUP(luaL_checkstring(l, -1));
     }
     git_strarray **udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_STRARRAY);
@@ -66,4 +65,9 @@ const char *getstrfield(lua_State *l, int tbx, const char *field) {
     } else {
         return luaL_checkstring(l, -1);
     }
+}
+
+void getbyindex(lua_State *l, int tbx, int idx) {
+    lua_pushinteger(l, idx + 1);
+    lua_gettable(l, tbx);
 }

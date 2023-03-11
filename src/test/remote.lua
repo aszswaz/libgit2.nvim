@@ -1,5 +1,25 @@
 local M = {}
 
+function M.regCmd(parser)
+    local cmd = parser:command("remote", "管理存储库的远程仓库")
+    local list = cmd:command("list", "列出所有远程仓库")
+    list:flag("-v --verbose", "显示远程仓库的地址")
+    local create = cmd:command("create", "创建远程仓库")
+    create:argument("name", "远程仓库的名称")
+    create:argument("url", "远程仓库的地址")
+    parser:command("push", "推送到远程仓库")
+end
+
+function M.run(args)
+    if args.remote and args.create then
+        M.create(args.repo, args.name, args.url)
+    elseif args.remote and args.list then
+        M.list(args.repo, args.verbose)
+    elseif args.push then
+        M.push(args.repo)
+    end
+end
+
 function M.create(repo, name, url)
     repo = git.repository.open(repo)
     local remote = git.remote.create(repo, name, url)

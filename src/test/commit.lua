@@ -1,5 +1,17 @@
 local M = {}
 
+function M.regCmd(parser)
+    local cmd = parser:command("commit", "记录对存储库的更改")
+    cmd:option("-m --message", "提交信息")
+end
+
+function M.run(args)
+    if not args.commit then
+        return
+    end
+    M.commit(args.repo, args.message)
+end
+
 function M.commit(repo, msg)
     repo = git.repository.open(repo)
     local parent, ref = git.revparse.ext(repo, "HEAD")

@@ -1,5 +1,16 @@
 local M = {}
 
+function M.regCmd(parser)
+    parser:command("info", "打印 libgit2 的信息")
+end
+
+function M.run(args)
+    if not args.info then
+        return
+    end
+    M.show()
+end
+
 function M.show()
     -- 打印 libgit2 的信息
     local version = git.version()

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-command="cmake '-DCMAKE_BUILD_TYPE=Debug'"
+command="cmake '-DENABLE_DEBUG=ON'"
 for iterm in $*; do
     command="$command '$iterm'"
 done

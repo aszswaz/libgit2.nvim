@@ -1,5 +1,23 @@
 local M = {}
 
+function M.regCmd(parser)
+    local cmd = parser:command("option", "libgit2 的选项")
+    cmd:command("show", "打印所有选项")
+    cmd:command("set", "设置所有选项，并打印所有选项的值")
+end
+
+function M.run(args)
+    if not args.option then
+        return
+    end
+
+    if args.show then
+        M.show()
+    elseif args.set then
+        M.set()
+    end
+end
+
 function M.show()
     -- 打印 libgit2 的默认全局选项
     print("mwindow_size:", git.get_option "mwindow_size")
