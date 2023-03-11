@@ -2,9 +2,9 @@
 
 option(ALLOCATOR_LOGGER OFF)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if (${ENABLE_DEBUG})
     add_definitions(-DENABLE_LOGGER)
-    if (${ALLOCATOR_LOGGER} STREQUAL "ON")
-        add_definitions(-DENABLE_ALLOCATOR_LOGGER)
-    endif()
+endif()
+if (${ENABLE_ALLOCATOR_LOGGER})
+    add_definitions(-DENABLE_ALLOCATOR_LOGGER)
 endif()

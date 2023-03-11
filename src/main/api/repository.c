@@ -33,7 +33,6 @@ static int lrepository_init(lua_State *l) {
 static int lrepository_open(lua_State *l) {
     const char *path = luaL_checkstring(l, 1);
     git_repository **repo = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_REPOSITORY);
-    *repo = NULL;
     LUA_GIT_ERROR(l, git_repository_open(repo, path));
     return 1;
 }
@@ -46,26 +45,20 @@ static int lrepository_open(lua_State *l) {
  */
 static int lrepository_open_ext(lua_State *l) {
     git_repository *repo;
-    int flags = 0, no_search, cross_fs, bare, no_dotgit, from_env;
+    int flags = 0;
     const uint8_t table_index = 2;
-    const char *ceiling_dirs;
+    const char *ceiling_dirs = NULL;
 
     const char *path = luaL_checkstring(l, 1);
 
     if (lua_istable(l, table_index)) {
         // 根据 options 设置 flags 和 ceiling_dirs
         ceiling_dirs = getstrfield(l, table_index, "ceiling_dirs");
-        no_search = getboolfield(l, table_index, "no_search");
-        cross_fs = getboolfield(l, table_index, "cross_fs");
-        bare = getboolfield(l, table_index, "bare");
-        no_dotgit = getboolfield(l, table_index, "no_dotgit");
-        from_env = getboolfield(l, table_index, "from_env");
-
-        if (no_search) flags |= GIT_REPOSITORY_OPEN_NO_SEARCH;
-        if (cross_fs) flags |= GIT_REPOSITORY_OPEN_CROSS_FS;
-        if (bare) flags |= GIT_REPOSITORY_OPEN_BARE;
-        if (no_dotgit) flags |= GIT_REPOSITORY_OPEN_NO_DOTGIT;
-        if (from_env) flags |= GIT_REPOSITORY_OPEN_FROM_ENV;
+        if (getboolfield(l, table_index, "no_search")) flags |= GIT_REPOSITORY_OPEN_NO_SEARCH;
+        if (getboolfield(l, table_index, "cross_fs")) flags |= GIT_REPOSITORY_OPEN_CROSS_FS;
+        if (getboolfield(l, table_index, "bare")) flags |= GIT_REPOSITORY_OPEN_BARE;
+        if (getboolfield(l, table_index, "no_dotgit")) flags |= GIT_REPOSITORY_OPEN_NO_DOTGIT;
+        if (getboolfield(l, table_index, "from_env")) flags |= GIT_REPOSITORY_OPEN_FROM_ENV;
     }
 
     int code = git_repository_open_ext(&repo, path, flags, ceiling_dirs);
@@ -110,7 +103,6 @@ static int lrepository_index(lua_State *l) {
     git_repository *repo = *(git_repository **)luaL_checkudata(l, 1, LUA_METATABLE_GIT_REPOSITORY);
 
     git_index **index = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_INDEX);
-    *index = NULL;
     LUA_GIT_ERROR(l, git_repository_index(index, repo));
     return 1;
 }

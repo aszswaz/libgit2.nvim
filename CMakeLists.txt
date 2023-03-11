@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 3.22.2)
 project("libgit2.nvim")
 
-if (NOT CMAKE_BUILD_TYPE)
+option(ENABLE_DEBUG            "enable debugging" OFF)
+option(ENABLE_ALLOCATOR_LOGGER "Print details of memory allocation." OFF)
+
+if(${ENABLE_DEBUG})
+    set(CMAKE_BUILD_TYPE "Debug")
+else()
     set(CMAKE_BUILD_TYPE "Release")
 endif()
+
 # 生成 compile_commands.json 文件，一些用具会用它来进行语法辅助，比如 ccls
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 execute_process(COMMAND "ln" "-svf" "${CMAKE_BINARY_DIR}/compile_commands.json" "compile_commands.json")
@@ -17,8 +23,8 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "lib")
 file(GLOB_RECURSE SOURCE_MAIN ./src/main/*.c)
 file(GLOB_RECURSE SOURCE_TEST ./src/test/*.c)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-add_executable(${PROJECT_NAME} ${SOURCE_MAIN} ${SOURCE_TEST})
+if (${ENABLE_DEBUG})
+    add_executable(${PROJECT_NAME} ${SOURCE_MAIN} ${SOURCE_TEST})
 else()
     add_library(${PROJECT_NAME} SHARED ${SOURCE_MAIN})
     set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_NAME git2)
