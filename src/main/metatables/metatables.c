@@ -65,10 +65,12 @@ void lmetatables_init(lua_State *l) {
     }));
     SETFUNCS(l, LUA_METATABLE_GIT_DIFF_DELTA, ((luaL_Reg []) {
         {"__tostring", lm_tostring_diff_delta},
+        {"__index", lm_index_diff_delta},
         end
     }));
     SETFUNCS(l, LUA_METATABLE_GIT_DIFF_FILE, ((luaL_Reg []) {
         {"__tostring", lm_tostring_diff_file},
+        {"__index", lm_index_diff_file},
         end
     }));
     SETFUNCS(l, LUA_METATABLE_GIT_STRARRAY, ((luaL_Reg []) {

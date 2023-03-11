@@ -62,7 +62,7 @@ static int lm_index_status_list(lua_State *l) {
 
     const git_status_entry *entry = git_status_byindex(list, idx - 1);
     if (entry) {
-        const git_status_entry **udat = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_STATUS_ENTRY);
+        const git_status_entry **udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_STATUS_ENTRY);
         *udat = entry;
     } else {
         lua_pushnil(l);
@@ -79,14 +79,64 @@ static int lm_index_status_entry(lua_State *l) {
 
     if (field_equal("status")) {
         lua_pushinteger(l, entry->status);
-    } else if (field_equal("head_to_index")) {
-        git_diff_delta **udat = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_DIFF_DELTA);
+    } else if (field_equal("head_to_index") && entry->head_to_index) {
+        git_diff_delta **udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_DIFF_DELTA);
         *udat = entry->head_to_index;
-    } else if (field_equal("index_to_workdir")) {
-        git_diff_delta **udat = new_userdata(l, sizeof(size_t), LUA_METATABLE_GIT_DIFF_DELTA);
+    } else if (field_equal("index_to_workdir") && entry->index_to_workdir) {
+        git_diff_delta **udat = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_DIFF_DELTA);
         *udat = entry->index_to_workdir;
     } else {
         lua_pushnil(l);
+    }
+    return 1;
+}
+
+/**
+ * 访问 git_diff_delta
+ */
+static int lm_index_diff_delta(lua_State *l) {
+    git_diff_delta *delta = *(git_diff_delta **)lua_touserdata(l, 1);
+    const char *field = luaL_checkstring(l, 2);
+
+    if (field_equal("status")) {
+        lua_pushinteger(l, delta->status);
+    } else if (field_equal("flags")) {
+        lua_pushinteger(l, delta->flags);
+    } else if (field_equal("similarity")) {
+        lua_pushinteger(l, delta->similarity);
+    } else if (field_equal("nfiles")) {
+        lua_pushinteger(l, delta->nfiles);
+    } else if (field_equal("new_file")) {
+        git_diff_file **file = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_DIFF_FILE);
+        *file = &delta->new_file;
+    } else if (field_equal("old_file")) {
+        git_diff_file **file = new_userdata(l, sizeof(void *), LUA_METATABLE_GIT_DIFF_FILE);
+        *file = &delta->old_file;
+    }
+    return 1;
+}
+
+/**
+ * 访问 git_diff_file
+ */
+static int lm_index_diff_file(lua_State *l) {
+    git_diff_file *file = *(git_diff_file **)lua_touserdata(l, 1);
+    const char *field = luaL_checkstring(l, 2);
+
+    if (field_equal("id")) {
+        char oid[GIT_OID_HEXSZ] = {};
+        git_oid_fmt(oid, &file->id);
+        lua_pushstring(l, oid);
+    } else if (field_equal("path")) {
+        lua_pushstring(l, file->path);
+    } else if (field_equal("size")) {
+        lua_pushinteger(l, file->size);
+    } else if (field_equal("flags")) {
+        lua_pushinteger(l, file->flags);
+    } else if (field_equal("mode")) {
+        lua_pushinteger(l, file->mode);
+    } else if (field_equal("id_abbrev")) {
+        lua_pushinteger(l, file->id_abbrev);
     }
     return 1;
 }
